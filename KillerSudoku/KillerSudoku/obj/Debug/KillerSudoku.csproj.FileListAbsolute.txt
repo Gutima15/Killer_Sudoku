@@ -1,0 +1,10 @@
+C:\Users\josue\Documents\Killer_Sudoku\KillerSudoku\KillerSudoku\bin\Debug\KillerSudoku.exe.config
+C:\Users\josue\Documents\Killer_Sudoku\KillerSudoku\KillerSudoku\bin\Debug\KillerSudoku.exe
+C:\Users\josue\Documents\Killer_Sudoku\KillerSudoku\KillerSudoku\bin\Debug\KillerSudoku.pdb
+C:\Users\josue\Documents\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.csprojAssemblyReference.cache
+C:\Users\josue\Documents\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.Properties.Resources.resources
+C:\Users\josue\Documents\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.csproj.GenerateResource.cache
+C:\Users\josue\Documents\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.csproj.CoreCompileInputs.cache
+C:\Users\josue\Documents\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.exe
+C:\Users\josue\Documents\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.pdb
+C:\Users\josue\Documents\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.s.resources
