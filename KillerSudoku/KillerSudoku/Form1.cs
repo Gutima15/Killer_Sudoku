@@ -32,7 +32,7 @@ namespace KillerSudoku
             y2 = 75;
             SetBounds(0, 0, screen.Bounds.Width, screen.Bounds.Height);
             graphics = CreateGraphics();
-            normalPen = new Pen(Color.Black, 1);
+            normalPen = new Pen(Color.Gray, 1);
             backBrush = new SolidBrush(Color.White);
             Paint += S_Paint;
         }
@@ -75,7 +75,6 @@ namespace KillerSudoku
                 graphics.DrawLine(normalPen, counterX, y1, counterX, y1 + 500);
                 counterX += boxSize;
             }
-
             for (int j = 0; j <= order; j++)
             {
                 graphics.DrawLine(normalPen, x1, counterY, x1 + 500, counterY);
@@ -91,9 +90,123 @@ namespace KillerSudoku
                 {
                     int i = dot.getI() * boxSize;
                     int j = dot.getJ() * boxSize;
-                    graphics.FillRectangle(drawBrush, x1 + i+1, y1 + j+1, boxSize - 1, boxSize - 1);
+                    graphics.FillRectangle(drawBrush, x1 + i + 1, y1 + j + 1, boxSize - 1, boxSize - 1);
                 }
             }
+            foreach (Figure figure in figures)
+            {
+                List<Dot> dots = figure.getDots();
+                foreach (Dot dot in dots)
+                {
+                    int i = dot.getI() * boxSize;
+                    int j = dot.getJ() * boxSize;
+                    int shape = dot.getShape();
+                    Pen bordersPen = new Pen(Color.Black, 3);
+                    int x = x1 + i + 1;
+                    int y = y1 + j + 1;
+                    switch (shape)
+                    {
+                        case 1:
+                            graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
+                            graphics.DrawLine(bordersPen, x, y, x, y + boxSize);//Horizontal Up
+                            graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
+                            break;
+                        case 2:
+                            graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
+                            graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y+ boxSize);//Horizontal Down
+                            graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
+                            break;
+                        case 3:
+                            graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
+                            graphics.DrawLine(bordersPen, x, y, x, y + boxSize);//Horizontal Up
+                            graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y + boxSize);//Horizontal Down
+                            break;
+                        case 4:
+                            graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
+                            graphics.DrawLine(bordersPen, x, y, x, y + boxSize);//Horizontal Up
+                            graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y + boxSize);//Horizontal Down
+                            break;
+                        case 5:
+                            graphics.DrawLine(bordersPen, x, y, x, y + boxSize);//Horizontal Up
+                            graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y + boxSize);//Horizontal Down
+                            break;
+                        case 6:
+                            graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
+                            graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
+                            break;
+                        case 7:
+                            graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
+                            graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y + boxSize);//Horizontal Down
+                            break;
+                        case 8:
+                            graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y + boxSize);//Horizontal Down
+                            graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
+                            break;
+                        case 9:
+                            graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
+                            graphics.DrawLine(bordersPen, x, y, x, y + boxSize);//Horizontal Up
+                            break;
+                        case 10:
+                            graphics.DrawLine(bordersPen, x, y, x, y + boxSize);//Horizontal Up
+                            graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
+                            break;
+                        case 11:
+                            graphics.DrawLine(bordersPen, x, y, x, y + boxSize);//Horizontal Up
+                            graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
+                            //----
+                            //----
+                            break;
+                        case 12:
+                            graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
+                            graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y + boxSize);//Horizontal Down
+                            //---
+                            //---
+                            break;
+                        case 13:
+                            graphics.DrawLine(bordersPen, x, y, x, y + boxSize);//Horizontal Up
+                            graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
+                            //-----
+                            //-----
+                            break;
+                        case 14:
+                            graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
+                            graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y + boxSize);//Horizontal Down
+                            //----
+                            //----
+                            break;
+                        case 15:
+                            graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y + boxSize);//Horizontal Down
+                            //----
+                            //----
+                            //----
+                            //----
+                            break;
+                        case 16:
+                            graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
+                            //----
+                            //----
+                            //----
+                            //----
+                            break;
+                        case 17:
+                            graphics.DrawLine(bordersPen, x, y, x, y + boxSize);//Horizontal Up
+                            //----
+                            //----
+                            //----
+                            //----
+                            break;
+                        case 18:
+                            graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
+                            //----
+                            //----
+                            //----
+                            //----
+                            break;
+                    }
+                }
+            }
+
+
             for (int i = 0; i < order; i++)
             {
                 for (int j = 0; j < order; j++)
@@ -101,21 +214,6 @@ namespace KillerSudoku
                     graphics.DrawString(sudoku.getPositionNumber(i, j) + "", new Font("Arial", 10), new SolidBrush(Color.Black), x1 + i * boxSize + numberPosX, y1 + j * boxSize + numberPosY);
                 }
             }
-            /*
-            Pen myPen = new Pen(Color.Green, 5);
-            //graphics.DrawLine(myPen, 50, 50, 200, 50);
-            Font drawFont = new Font("Arial", 16);
-            SolidBrush drawBrush = new SolidBrush(Color.Cyan);
-            //float x = 150.0F;
-            //float y = 50.0F;
-            //graphics.DrawString("Example", drawFont, drawBrush, x, y);
-            Pen myPen1 = new Pen(Color.Blue, 1);
-            //graphics.DrawRectangle(myPen, myRectangle);
-            graphics.FillRectangle(drawBrush, new Rectangle(x1, y1, 400, 400));
-            graphics.FillRectangle(drawBrush, new Rectangle(x2, y2, 400, 400));
-            */
         }
-
-        
     }
 }

@@ -10,11 +10,13 @@ namespace KillerSudoku
     {
         private int i;
         private int j;
+        private int shape;
 
-        public Dot(int x, int y)
+        public Dot(int x, int y,int shape)
         {
             i = x;
             j = y;
+            this.shape = shape;
         }
         public int getI()
         {
@@ -23,6 +25,10 @@ namespace KillerSudoku
         public int getJ()
         {
             return j;
+        }
+        public int getShape()
+        {
+            return shape;
         }
     }
 }
