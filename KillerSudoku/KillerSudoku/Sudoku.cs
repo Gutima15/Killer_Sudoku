@@ -17,14 +17,12 @@ namespace KillerSudoku
         private List<int> vector;
         private List<string> vectorString;
         private bool repeat;
-        private int failCounter;
 
         public Sudoku(int size)
         {
             order = size;
             this.size = size;
             matrix = new int[size, size];
-            failCounter = 0;
             vector = new List<int>();
             vectorString = new List<string>();
             repeat = false;
@@ -47,45 +45,26 @@ namespace KillerSudoku
                     {
                         repeat = false;
                         j = 0;
-                        fillVector();
-                        failCounter = 0;
                     }
                 }
-                fillVector();
             }
         }
-        public int GetSize()
-        {
-            return size;
-        }
-
-        private void fillVector()
-        {
-            vector.Clear();
-            for (int i = 1; i < order + 1; i++)
-            {
-                vector.Add(i);
-            }
-        }
-        
         private int getNumber(int x, int y)
         {
             Random rnd = new Random();
-            int index = rnd.Next(vector.Count);
-            int number = vector[index];
+            int number = vector[rnd.Next(vector.Count)];
             bool exists = false;
             bool done = false;
-
             while (done == false)
             {
-                for (int i = 0; i < x; i++)
+                for (int i = 0; i < x; i++) //Check above it
                 {
                     if (matrix[i, y] == number)
                     {
                         exists = true;
                     }
                 }
-                for (int j = 0; j < y; j++)
+                for (int j = 0; j < y; j++)//check at the left
                 {
                     if (matrix[x, j] == number)
                     {
@@ -94,27 +73,40 @@ namespace KillerSudoku
                 }
                 if (exists == true)
                 {
-                    index = rnd.Next(vector.Count);
-                    number = vector[index];
+                    vector.Remove(number);
                     exists = false;
-                    failCounter++;
-                    if (failCounter == 25)
+                    if(vector.Count == 0)
                     {
                         repeat = true;
-                        failCounter = 0;
                         done = true;
+                        fillVector();
+                    }
+                    else
+                    {
+                        number = vector[rnd.Next(vector.Count)];
                     }
                 }
                 else
                 {
-                    vector.Remove(number);
-                    failCounter = 0;
+                    fillVector();
                     done = true;
                 }
             }
             return number;
         }
-        
+        public int GetSize()
+        {
+            return size;
+        }
+        private void fillVector()
+        {
+            vector.Clear();
+            for (int i = 1; i < order + 1; i++)
+            {
+                vector.Add(i);
+            }
+        }
+
         public void saveSudoku()
         {
             String line = "";

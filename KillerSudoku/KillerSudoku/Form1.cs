@@ -26,10 +26,10 @@ namespace KillerSudoku
         {
             InitializeComponent();
             Screen screen = Screen.PrimaryScreen;
-            x1 = 25;
-            x2 = 550;
-            y1 = 75;
-            y2 = 75;
+            x1 = 0;
+            x2 = 600;
+            y1 = 0;
+            y2 = 0;
             SetBounds(0, 0, screen.Bounds.Width, screen.Bounds.Height);
             graphics = CreateGraphics();
             normalPen = new Pen(Color.Gray, 1);
@@ -39,10 +39,10 @@ namespace KillerSudoku
 
         private void S_Paint(object sender, PaintEventArgs e)
         {
-            graphics.DrawRectangle(normalPen, new Rectangle(x1, y1, 500, 500));
-            graphics.DrawRectangle(normalPen, new Rectangle(x2, y2, 500, 500));
-            graphics.FillRectangle(backBrush, new Rectangle(x1+1, y1+1, 499, 499));
-            graphics.FillRectangle(backBrush, new Rectangle(x2+1, y2+1, 499, 499));
+            graphics.DrawRectangle(normalPen, new Rectangle(x1, y1, 600, 600));
+            graphics.DrawRectangle(normalPen, new Rectangle(x2, y2, 600, 600));
+            graphics.FillRectangle(backBrush, new Rectangle(x1+1, y1+1, 599, 599));
+            graphics.FillRectangle(backBrush, new Rectangle(x2+1, y2+1, 599, 599));
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -51,37 +51,38 @@ namespace KillerSudoku
         }
         
 
-        private void CleanGoalPanel()
+        private void CleanPanel_1()
         {
-            graphics.DrawRectangle(normalPen, new Rectangle(x1, y1, 500, 500));
-            graphics.DrawRectangle(normalPen, new Rectangle(x2, y2, 500, 500));
-            graphics.FillRectangle(backBrush, new Rectangle(x1 + 1, y1 + 1, 499, 499));
-            graphics.FillRectangle(backBrush, new Rectangle(x2 + 1, y2 + 1, 499, 499));
+            graphics.DrawRectangle(normalPen, new Rectangle(x1, y1, 600, 600));
+            graphics.FillRectangle(backBrush, new Rectangle(x1 + 1, y1 + 1, 599, 599));
         }
-
-        private void btnGenerate_Click(object sender, EventArgs e)
+        private void CleanPanel_2()
         {
-            CleanGoalPanel();
-            order = Int32.Parse(comboBox1.SelectedItem.ToString());
-            sudoku = new Sudoku(order);
-            int counterX = x1;
-            int counterY = y1;
-            int boxSize = 500 / order;
-            int numberPosX = boxSize / 3;
-            int numberPosY = boxSize / 3;
+            graphics.DrawRectangle(normalPen, new Rectangle(x2, y2, 600, 600));
+            graphics.FillRectangle(backBrush, new Rectangle(x2 + 1, y2 + 1, 599, 599));
+        }
+        private void drawSquareLines(int startX, int startY)
+        {
+            int counterX = startX;
+            int counterY = startY;
+            int boxSize = 600 / order;
 
             for (int i = 0; i <= order; i++)
             {
-                graphics.DrawLine(normalPen, counterX, y1, counterX, y1 + 500);
+                graphics.DrawLine(normalPen, counterX, startY, counterX, startY + 600);
                 counterX += boxSize;
             }
             for (int j = 0; j <= order; j++)
             {
-                graphics.DrawLine(normalPen, x1, counterY, x1 + 500, counterY);
+                graphics.DrawLine(normalPen, startX, counterY, startX + 600, counterY);
                 counterY += boxSize;
             }
+        }
+        private void drawColorBoxes()
+        {
             List<Figure> figures = sudoku.getFiguresList();
-            graphics.DrawString(figures.Count + "", new Font("Arial", 20), new SolidBrush(Color.Black), 600, 100);
+            //graphics.DrawString(figures.Count + "", new Font("Arial", 20), new SolidBrush(Color.Black), 600, 100);
+            int boxSize = 600 / order;
             foreach (Figure figure in figures)
             {
                 List<Dot> dots = figure.getDots();
@@ -93,6 +94,11 @@ namespace KillerSudoku
                     graphics.FillRectangle(drawBrush, x1 + i + 1, y1 + j + 1, boxSize - 1, boxSize - 1);
                 }
             }
+        }
+        private void drawFiguresEdges(int startX,int startY)
+        {
+            List<Figure> figures = sudoku.getFiguresList();
+            int boxSize = 600 / order;
             foreach (Figure figure in figures)
             {
                 List<Dot> dots = figure.getDots();
@@ -102,8 +108,8 @@ namespace KillerSudoku
                     int j = dot.getJ() * boxSize;
                     int shape = dot.getShape();
                     Pen bordersPen = new Pen(Color.Black, 3);
-                    int x = x1 + i + 1;
-                    int y = y1 + j + 1;
+                    int x = startX + x1 + i + 1;
+                    int y = startY + y1 + j + 1;
                     switch (shape)
                     {
                         case 1:
@@ -113,7 +119,7 @@ namespace KillerSudoku
                             break;
                         case 2:
                             graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
-                            graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y+ boxSize);//Horizontal Down
+                            graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y + boxSize);//Horizontal Down
                             graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
                             break;
                         case 3:
@@ -134,86 +140,88 @@ namespace KillerSudoku
                             graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
                             graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
                             break;
-                        case 7:
-                            graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
-                            graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y + boxSize);//Horizontal Down
-                            break;
-                        case 8:
-                            graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y + boxSize);//Horizontal Down
-                            graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
-                            break;
-                        case 9:
-                            graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
-                            graphics.DrawLine(bordersPen, x, y, x, y + boxSize);//Horizontal Up
-                            break;
-                        case 10:
-                            graphics.DrawLine(bordersPen, x, y, x, y + boxSize);//Horizontal Up
-                            graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
-                            break;
                         case 11:
                             graphics.DrawLine(bordersPen, x, y, x, y + boxSize);//Horizontal Up
                             graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
-                            //----
-                            //----
                             break;
                         case 12:
                             graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
                             graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y + boxSize);//Horizontal Down
-                            //---
-                            //---
                             break;
                         case 13:
                             graphics.DrawLine(bordersPen, x, y, x, y + boxSize);//Horizontal Up
                             graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
-                            //-----
-                            //-----
                             break;
                         case 14:
                             graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
                             graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y + boxSize);//Horizontal Down
-                            //----
-                            //----
                             break;
                         case 15:
                             graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y + boxSize);//Horizontal Down
-                            //----
-                            //----
-                            //----
-                            //----
                             break;
                         case 16:
                             graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
-                            //----
-                            //----
-                            //----
-                            //----
                             break;
                         case 17:
                             graphics.DrawLine(bordersPen, x, y, x, y + boxSize);//Horizontal Up
-                            //----
-                            //----
-                            //----
-                            //----
                             break;
                         case 18:
                             graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
-                            //----
-                            //----
-                            //----
-                            //----
+                            break;
+                        case 19:
+                            graphics.DrawLine(bordersPen, x, y, x, y + boxSize);//Horizontal Up
+                            graphics.DrawLine(bordersPen, x, y, x + boxSize, y);//Vertical Left
+                            graphics.DrawLine(bordersPen, x, y + boxSize, x + boxSize, y + boxSize);//Vertical Right
+                            graphics.DrawLine(bordersPen, x + boxSize, y, x + boxSize, y + boxSize);//Horizontal Down
                             break;
                     }
                 }
             }
-
-
+        }
+        private void drawMatrixNumbers()
+        {
+            int boxSize = 600 / order;
             for (int i = 0; i < order; i++)
             {
                 for (int j = 0; j < order; j++)
                 {
-                    graphics.DrawString(sudoku.getPositionNumber(i, j) + "", new Font("Arial", 10), new SolidBrush(Color.Black), x1 + i * boxSize + numberPosX, y1 + j * boxSize + numberPosY);
+                    graphics.DrawString(sudoku.getPositionNumber(i, j) + "", new Font("Arial", 25 - order), new SolidBrush(Color.Black), x1 + 2 + i * boxSize, y1 + boxSize - (31 - order) + j * boxSize);
                 }
             }
+        }
+
+        private void drawOperations()
+        {
+            List<Figure> figures = sudoku.getFiguresList();
+            int boxSize = 600 / order;
+            foreach (Figure figure in figures)
+            {
+                List<Dot> dots = figure.getDots();
+                foreach (Dot dot in dots)
+                {
+                    if (dot.verifyFirst() == true)
+                    {
+                        int i = dot.getI() * boxSize;
+                        int j = dot.getJ() * boxSize;
+                        graphics.DrawString(figure.getOperation() +" ", new Font("Arial", 25-order), new SolidBrush(Color.Black), 2 + i , 2 + j +(25 - order));
+                        graphics.DrawString(figure.getResult() + " ", new Font("Arial", 25 - order), new SolidBrush(Color.Black), 2 + i, 2 + j);
+                    }
+                }
+            }
+        }
+        private void btnGenerate_Click(object sender, EventArgs e)
+        {
+            CleanPanel_1();
+            CleanPanel_2();
+            order = Int32.Parse(comboBox1.SelectedItem.ToString());
+            sudoku = new Sudoku(order);
+            drawSquareLines(x1,y1);
+            drawSquareLines(x2,y2);
+            drawColorBoxes();
+            drawFiguresEdges(0,0);
+            drawFiguresEdges(600,0);
+            drawMatrixNumbers();
+            drawOperations();
         }
     }
 }

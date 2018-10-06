@@ -14,6 +14,7 @@ namespace KillerSudoku
         private string operation;  //(1,+),(2,*),(3,%)
         private int result;
         private List<Dot> dotList;
+        private bool isJoker;
 
         public Figure(int type,Color color,string operation,int result,List<Dot> dotList)
         {
@@ -22,6 +23,16 @@ namespace KillerSudoku
             this.operation = operation;
             this.dotList = dotList;
             this.result = result;
+            isJoker = false;
+        }
+        public Figure(int type, Color color, List<Dot> dotList)
+        {
+            this.type = type;
+            this.color = color;
+            this.dotList = dotList;
+            isJoker = true;
+            operation = "";
+            result = 0;
         }
         public Color getColor()
         {

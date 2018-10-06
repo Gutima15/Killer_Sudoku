@@ -11,12 +11,21 @@ namespace KillerSudoku
         private int i;
         private int j;
         private int shape;
+        private bool isFirst;
 
         public Dot(int x, int y,int shape)
         {
             i = x;
             j = y;
             this.shape = shape;
+            isFirst = false;
+        }
+        public Dot(int x, int y, int shape,bool first)
+        {
+            i = x;
+            j = y;
+            this.shape = shape;
+            isFirst = true;
         }
         public int getI()
         {
@@ -29,6 +38,10 @@ namespace KillerSudoku
         public int getShape()
         {
             return shape;
+        }
+        public bool verifyFirst()
+        {
+            return isFirst;
         }
     }
 }
