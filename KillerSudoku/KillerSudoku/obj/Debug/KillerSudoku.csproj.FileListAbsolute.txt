@@ -8,3 +8,13 @@ C:\Users\josue\Documents\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\Kille
 C:\Users\josue\Documents\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.exe
 C:\Users\josue\Documents\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.pdb
 C:\Users\josue\Documents\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.s.resources
+C:\Users\keyro\Desktop\Killer_Sudoku\KillerSudoku\KillerSudoku\bin\Debug\KillerSudoku.exe.config
+C:\Users\keyro\Desktop\Killer_Sudoku\KillerSudoku\KillerSudoku\bin\Debug\KillerSudoku.exe
+C:\Users\keyro\Desktop\Killer_Sudoku\KillerSudoku\KillerSudoku\bin\Debug\KillerSudoku.pdb
+C:\Users\keyro\Desktop\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.csprojAssemblyReference.cache
+C:\Users\keyro\Desktop\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.s.resources
+C:\Users\keyro\Desktop\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.Properties.Resources.resources
+C:\Users\keyro\Desktop\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.csproj.GenerateResource.cache
+C:\Users\keyro\Desktop\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.csproj.CoreCompileInputs.cache
+C:\Users\keyro\Desktop\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.exe
+C:\Users\keyro\Desktop\Killer_Sudoku\KillerSudoku\KillerSudoku\obj\Debug\KillerSudoku.pdb

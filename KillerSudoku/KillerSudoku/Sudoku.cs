@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +11,7 @@ namespace KillerSudoku
     class Sudoku
     {
         private int[,] matrix;
+        private int[,] resultMatrix;
         private FigureFactory figureFactory;
         private bool[,] booleanMatrix;
         private List<Figure> figureList;
@@ -17,7 +20,10 @@ namespace KillerSudoku
         private List<int> vector;
         private List<string> vectorString;
         private bool repeat;
-
+        private StreamReader objReader;
+        private StreamReader objReader2;
+        //private string sLine;
+        // private ArrayList arrText;
         public Sudoku(int size)
         {
             order = size;
@@ -30,9 +36,62 @@ namespace KillerSudoku
             GenerateBooleanMatrix();
             figureFactory = new FigureFactory(size, matrix, booleanMatrix);
             figureList = figureFactory.getFigures();
+            FillNullMatriz(resultMatrix);
             
         }
-
+        public Sudoku(string firstFile, string secondFile)
+        {
+            objReader = new StreamReader(firstFile);
+            objReader2= new StreamReader(secondFile);                 
+        }
+        public void SaveSudoku()
+        {
+            String line = "";
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Keyro\Desktop\WriteLines.txt"))
+            {
+                for (int i = 0; i < size; i++)
+                {
+                    for (int j = 0; j < size; j++)
+                    {
+                        line += matrix[i, j] + ",";
+                    }
+                    file.WriteLine(line);
+                    line = "";
+                }
+            }
+        }
+        public void LoadSodoku()
+        {
+            return;
+        }
+        public void FillNullMatriz(int[,]matrix)
+        {
+            for (int i = 0; i < GetSize(); i++)
+            {
+                for (int j = 0; j < GetSize(); j++)
+                {
+                    matrix[i, j] = 0;
+                }
+            }
+        }
+        
+        public void FillRandomNumbers()
+        {
+            Random rnd = new Random();
+            for (int i=0; i < GetSize(); i++)
+            {
+                for (int j =0; j< GetSize(); j++)
+                {
+                    int randomNumber = rnd.Next(1, GetSize());
+                    if (randomNumber == 1 || randomNumber == 5)//||randomNumber=3  
+                    {
+                        matrix[i, j] = resultMatrix[i, j];
+                    }
+                }
+                                         
+            }
+            
+        }
         public void generateMatrix()
         {
             fillVector();
@@ -107,23 +166,6 @@ namespace KillerSudoku
             }
         }
 
-        public void saveSudoku()
-        {
-            String line = "";
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Jorge Eduardo\Desktop\WriteLines.txt"))
-            {
-                for (int i = 0; i < size; i++)
-                {
-                    for (int j = 0; j < size; j++)
-                    {
-                        line += matrix[i, j] + ",";
-                    }
-                    file.WriteLine(line);
-                    line = "";
-                }
-            }
-        }
-
         public void GenerateBooleanMatrix()
         {
             booleanMatrix = new Boolean[size, size];
@@ -148,5 +190,6 @@ namespace KillerSudoku
         {
             return matrix[x, y];
         }
+
     }
 }
