@@ -67,7 +67,7 @@ namespace KillerSudoku
                         {
                             if (numbers.Count == 0)
                             {
-                                createJoker(i, j, 19, Color.LawnGreen);
+                                createJoker(i, j, 19, Color.Green);
                                 done = true;
                             }
                             else
@@ -280,7 +280,7 @@ namespace KillerSudoku
                                         {
                                             if (boolMatrix[i + 1, j] == false && boolMatrix[i + 2, j] == false && boolMatrix[i + 2, j - 1] == false)
                                             {
-                                                createFigure(i, j, i + 1, j, i + 2, j, i + 2, j - 1, 1, 6, 14, 3, Color.Green, getOperation());
+                                                createFigure(i, j, i + 1, j, i + 2, j, i + 2, j - 1, 1, 6, 14, 3, Color.LawnGreen, getOperation());
                                                 done = true; // FINISH
                                             }
                                             else
@@ -298,7 +298,7 @@ namespace KillerSudoku
                                         {
                                             if (boolMatrix[i + 1, j] == false && boolMatrix[i + 1, j + 1] == false && boolMatrix[i + 1, j + 2] == false)
                                             {
-                                                createFigure(i, j, i + 1, j, i + 1, j + 1, i + 1, j + 2, 1, 12, 5, 4, Color.Green, getOperation());
+                                                createFigure(i, j, i + 1, j, i + 1, j + 1, i + 1, j + 2, 1, 12, 5, 4, Color.LawnGreen, getOperation());
                                                 done = true; // FINISH
                                             }
                                             else
@@ -316,7 +316,7 @@ namespace KillerSudoku
                                         {
                                             if (boolMatrix[i, j + 1] == false && boolMatrix[i + 1, j] == false && boolMatrix[i + 2, j] == false)
                                             {
-                                                createFigure(i, j, i, j + 1, i + 1, j, i + 2, j, 11, 4, 6, 2, Color.Green, getOperation());
+                                                createFigure(i, j, i, j + 1, i + 1, j, i + 2, j, 11, 4, 6, 2, Color.LawnGreen, getOperation());
                                                 done = true; // FINISH
                                             }
                                             else
@@ -334,7 +334,7 @@ namespace KillerSudoku
                                         {
                                             if (boolMatrix[i, j + 1] == false && boolMatrix[i, j + 2] == false && boolMatrix[i + 1, j + 2] == false)
                                             {
-                                                createFigure(i, j, i, j + 1, i, j + 2, i + 1, j + 2, 3, 5, 13, 2, Color.Green, getOperation());
+                                                createFigure(i, j, i, j + 1, i, j + 2, i + 1, j + 2, 3, 5, 13, 2, Color.LawnGreen, getOperation());
                                                 done = true; // FINISH
                                             }
                                             else

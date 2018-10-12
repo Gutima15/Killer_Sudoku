@@ -11,7 +11,7 @@ namespace KillerSudoku
     {
         private int type;
         private Color color;
-        private string operation;  //(1,+),(2,*),(3,%)
+        private string operation;
         private int result;
         private List<Dot> dotList;
         private bool isJoker;

@@ -29,6 +29,7 @@ namespace KillerSudoku
             order = size;
             this.size = size;
             matrix = new int[size, size];
+            resultMatrix = new int[size, size];
             vector = new List<int>();
             vectorString = new List<string>();
             repeat = false;
@@ -36,7 +37,7 @@ namespace KillerSudoku
             GenerateBooleanMatrix();
             figureFactory = new FigureFactory(size, matrix, booleanMatrix);
             figureList = figureFactory.getFigures();
-            FillNullMatriz(resultMatrix);
+            FillNullMatrix();
             
         }
         public Sudoku(string firstFile, string secondFile)
@@ -64,13 +65,13 @@ namespace KillerSudoku
         {
             return;
         }
-        public void FillNullMatriz(int[,]matrix)
+        public void FillNullMatrix()
         {
-            for (int i = 0; i < GetSize(); i++)
+            for (int i = 0; i < size; i++)
             {
-                for (int j = 0; j < GetSize(); j++)
+                for (int j = 0; j < size; j++)
                 {
-                    matrix[i, j] = 0;
+                    resultMatrix[i, j] = 0;
                 }
             }
         }
@@ -82,8 +83,8 @@ namespace KillerSudoku
             {
                 for (int j =0; j< GetSize(); j++)
                 {
-                    int randomNumber = rnd.Next(1, GetSize());
-                    if (randomNumber == 1 || randomNumber == 5)//||randomNumber=3  
+                    int randomNumber = rnd.Next(1, size);
+                    if (randomNumber == 1 || randomNumber == 5) 
                     {
                         matrix[i, j] = resultMatrix[i, j];
                     }
