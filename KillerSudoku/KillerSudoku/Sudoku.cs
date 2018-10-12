@@ -5,6 +5,8 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace KillerSudoku
 {
@@ -17,38 +19,78 @@ namespace KillerSudoku
         private List<Figure> figureList;
         private int order;
         private int size;
+        private int rowsComplete;
         private List<int> vector;
         private List<string> vectorString;
         private bool repeat;
+        private bool matrixComplete;
         private StreamReader objReader;
         private StreamReader objReader2;
+        private Thread qmainThread;
+        private s myForm;
         //private string sLine;
         // private ArrayList arrText;
-        public Sudoku(int size)
+        public Sudoku(s form, int size)
         {
+            myForm = form;
             order = size;
             this.size = size;
             matrix = new int[size, size];
             resultMatrix = new int[size, size];
+            rowsComplete = 0;
             vector = new List<int>();
             vectorString = new List<string>();
             repeat = false;
-            generateMatrix();
+            matrixComplete = false;
+            qmainThread = new Thread(generateMatrix);
+            qmainThread.Start();
+            qmainThread.Join();
+            //generateMatrix();
             GenerateBooleanMatrix();
             figureFactory = new FigureFactory(size, matrix, booleanMatrix);
             figureList = figureFactory.getFigures();
             FillNullMatrix();
-            
+            FillRandomNumbers();
         }
         public Sudoku(string firstFile, string secondFile)
         {
             objReader = new StreamReader(firstFile);
             objReader2= new StreamReader(secondFile);                 
         }
+        public void generateMatrix()
+        {
+            myForm.updateGeneratingLabel("Generating...", "0%");
+            fillVector();
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    matrix[i, j] = getNumber(i, j);
+                    if (repeat == true)
+                    {
+                        repeat = false;
+                        j = 0;
+                    }
+                }
+                rowsComplete++;
+                myForm.CleanRightPanel();
+                myForm.updateGeneratingLabel("Generating...", getCompletedPercentage().ToString() + "%");
+                Thread.Sleep(100);
+            }
+            myForm.CleanRightPanel();
+        }
+        public bool getMatrixComplete()
+        {
+            return matrixComplete;
+        }
+        public int getCompletedPercentage()
+        {
+            return (rowsComplete*100)/order;
+        }
         public void SaveSudoku()
         {
             String line = "";
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\Keyro\Desktop\WriteLines.txt"))
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\josue\Desktop\WriteLines.txt"))
             {
                 for (int i = 0; i < size; i++)
                 {
@@ -84,30 +126,14 @@ namespace KillerSudoku
                 for (int j =0; j< GetSize(); j++)
                 {
                     int randomNumber = rnd.Next(1, size);
-                    if (randomNumber == 1 || randomNumber == 5) 
+                    if (randomNumber == 1) 
                     {
-                        matrix[i, j] = resultMatrix[i, j];
+                        resultMatrix[i, j] = matrix[i, j];
                     }
                 }
                                          
             }
             
-        }
-        public void generateMatrix()
-        {
-            fillVector();
-            for (int i = 0; i < size; i++)
-            {
-                for (int j = 0; j < size; j++)
-                {
-                    matrix[i, j] = getNumber(i, j);
-                    if (repeat == true)
-                    {
-                        repeat = false;
-                        j = 0;
-                    }
-                }
-            }
         }
         private int getNumber(int x, int y)
         {
@@ -191,6 +217,9 @@ namespace KillerSudoku
         {
             return matrix[x, y];
         }
-
+        public int getResultPositionNumber(int x, int y)
+        {
+            return resultMatrix[x, y];
+        }
     }
 }

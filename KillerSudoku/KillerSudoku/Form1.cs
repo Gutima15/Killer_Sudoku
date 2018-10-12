@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -34,22 +35,7 @@ namespace KillerSudoku
             graphics = CreateGraphics();
             normalPen = new Pen(Color.Gray, 1);
             backBrush = new SolidBrush(Color.White);
-            Paint += S_Paint;
         }
-
-        private void S_Paint(object sender, PaintEventArgs e)
-        {
-            graphics.DrawRectangle(normalPen, new Rectangle(x1, y1, 600, 600));
-            graphics.DrawRectangle(normalPen, new Rectangle(x2, y2, 600, 600));
-            graphics.FillRectangle(backBrush, new Rectangle(x1+1, y1+1, 599, 599));
-            graphics.FillRectangle(backBrush, new Rectangle(x2+1, y2+1, 599, 599));
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-        
 
         private void CleanPanel_1()
         {
@@ -60,6 +46,15 @@ namespace KillerSudoku
         {
             graphics.DrawRectangle(normalPen, new Rectangle(x2, y2, 600, 600));
             graphics.FillRectangle(backBrush, new Rectangle(x2 + 1, y2 + 1, 599, 599));
+        }
+        public void CleanRightPanel()
+        {
+            graphics.FillRectangle(new SolidBrush(Color.Black), new Rectangle(1205,220,150,100));
+        }
+        public void updateGeneratingLabel(String word, String percentage)
+        {
+            graphics.DrawString(word, new Font("Arial", 16), new SolidBrush(Color.Yellow), 1210, 230);
+            graphics.DrawString(percentage, new Font("Arial", 16), new SolidBrush(Color.Yellow), 1250, 260);
         }
         private void drawSquareLines(int startX, int startY)
         {
@@ -185,12 +180,12 @@ namespace KillerSudoku
             {
                 for (int j = 0; j < order; j++)
                 {
-                    graphics.DrawString(sudoku.getPositionNumber(i, j) + "", new Font("Arial", 25 - order), new SolidBrush(Color.Black), x1 + 2 + i * boxSize, y1 + boxSize - (31 - order) + j * boxSize);
+                    graphics.DrawString(sudoku.getPositionNumber(i, j) + "", new Font("Arial", 35 - order), new SolidBrush(Color.Black), x1 + 2 + i * boxSize, y1 + boxSize - (41 - order) + j * boxSize);
                 }
             }
         }
 
-        private void drawOperations()
+        private void drawOperations(int xStart, Color color)
         {
             List<Figure> figures = sudoku.getFiguresList();
             int boxSize = 600 / order;
@@ -201,27 +196,104 @@ namespace KillerSudoku
                 {
                     if (dot.verifyFirst() == true)
                     {
-                        int i = dot.getI() * boxSize;
-                        int j = dot.getJ() * boxSize;
-                        graphics.DrawString(figure.getOperation() +" ", new Font("Arial", 25-order), new SolidBrush(Color.Black), 2 + i , 2 + j +(25 - order));
-                        graphics.DrawString(figure.getResult() + " ", new Font("Arial", 25 - order), new SolidBrush(Color.Black), 2 + i, 2 + j);
+                        int i = (dot.getI() * boxSize) + xStart;
+                        int j = (dot.getJ() * boxSize);
+                        graphics.DrawString(figure.getOperation() +" ", new Font("Arial", 25-order), new SolidBrush(color), 2 + i , 2 + j +(25 - order));
+                        graphics.DrawString(figure.getResult() + " ", new Font("Arial", 25 - order), new SolidBrush(color), 2 + i, 2 + j);
                     }
                 }
             }
         }
+        private void drawResultInitialNumbers(Color color)
+        {
+            int boxSize = 600 / order;
+            for (int i = 0; i < order; i++)
+            {
+                for (int j = 0; j < order; j++)
+                {
+                    if(sudoku.getResultPositionNumber(i, j) != 0)
+                    {
+                        graphics.DrawString(sudoku.getResultPositionNumber(i, j) + "", new Font("Arial", 25 - order), new SolidBrush(color), x1 + 2 + i * boxSize + 600, y1 + boxSize - (31 - order) + j * boxSize);
+                    }
+                    
+                }
+            }
+        }
+
         private void btnGenerate_Click(object sender, EventArgs e)
         {
+            
             CleanPanel_1();
             CleanPanel_2();
-            order = Int32.Parse(comboBox1.SelectedItem.ToString());
-            sudoku = new Sudoku(order);
-            drawSquareLines(x1,y1);
-            drawSquareLines(x2,y2);
-            drawColorBoxes();
-            drawFiguresEdges(0,0);
-            drawFiguresEdges(600,0);
-            drawMatrixNumbers();
-            drawOperations();
+            if (comboBox1.SelectedIndex > -1)
+            {
+                order = Int32.Parse(comboBox1.SelectedItem.ToString());
+                sudoku = new Sudoku(this, order);
+                drawSquareLines(x1, y1);
+                drawSquareLines(x2, y2);
+                drawColorBoxes();
+                drawFiguresEdges(0, 0);
+                drawFiguresEdges(600, 0);
+                drawMatrixNumbers();
+                drawOperations(0, Color.Black);
+                drawOperations(600, Color.Black);
+                drawResultInitialNumbers(Color.Blue);
+            }
+            else
+            {
+                MessageBox.Show("You must select a size",
+                "Warning",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Exclamation,
+                MessageBoxDefaultButton.Button1);
+            }
+            //sudoku.SaveSudoku();
+            
+            //updateGeneratingLabel("Generating...", "0%");
+        }
+
+        private void btnLoad_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            // Displays a SaveFileDialog so the user can save the Image  
+            // assigned to Button2.  
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "Txt File|*.txt";
+            saveFileDialog1.Title = "Save Sudoku";
+            saveFileDialog1.ShowDialog();
+
+            // If the file name is not an empty string open it for saving.  
+            if (saveFileDialog1.FileName != "")
+            {
+                // Saves the Image via a FileStream created by the OpenFile method.  
+                System.IO.FileStream fs = (System.IO.FileStream)saveFileDialog1.OpenFile();
+                // Saves the Image in the appropriate ImageFormat based upon the  
+                // File type selected in the dialog box.  
+                // NOTE that the FilterIndex property is one-based.  
+                switch (saveFileDialog1.FilterIndex)
+                {
+                    case 1:
+                        //this.button2.Image.Save(fs,
+                           //System.Drawing.Imaging.ImageFormat.Jpeg);
+                        break;
+
+                    case 2:
+                        //this.button2.Image.Save(fs,
+                           //System.Drawing.Imaging.ImageFormat.Bmp);
+                        break;
+
+                    case 3:
+                        //this.button2.Image.Save(fs,
+                           //System.Drawing.Imaging.ImageFormat.Gif);
+                        break;
+                }
+
+                fs.Close();
+            }
         }
     }
 }
