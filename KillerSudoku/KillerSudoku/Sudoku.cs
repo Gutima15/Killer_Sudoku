@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace KillerSudoku
 {
@@ -26,10 +27,7 @@ namespace KillerSudoku
         private bool matrixComplete;
         private StreamReader objReader;
         private StreamReader objReader2;
-        private Thread qmainThread;
         private s myForm;
-        //private string sLine;
-        // private ArrayList arrText;
         public Sudoku(s form, int size)
         {
             myForm = form;
@@ -42,20 +40,12 @@ namespace KillerSudoku
             vectorString = new List<string>();
             repeat = false;
             matrixComplete = false;
-            qmainThread = new Thread(generateMatrix);
-            qmainThread.Start();
-            qmainThread.Join();
-            //generateMatrix();
+            generateMatrix();
             GenerateBooleanMatrix();
             figureFactory = new FigureFactory(size, matrix, booleanMatrix);
             figureList = figureFactory.getFigures();
             FillNullMatrix();
             FillRandomNumbers();
-        }
-        public Sudoku(string firstFile, string secondFile)
-        {
-            objReader = new StreamReader(firstFile);
-            objReader2= new StreamReader(secondFile);                 
         }
         public void generateMatrix()
         {
@@ -75,7 +65,6 @@ namespace KillerSudoku
                 rowsComplete++;
                 myForm.CleanRightPanel();
                 myForm.updateGeneratingLabel("Generating...", getCompletedPercentage().ToString() + "%");
-                Thread.Sleep(100);
             }
             myForm.CleanRightPanel();
         }
@@ -86,26 +75,6 @@ namespace KillerSudoku
         public int getCompletedPercentage()
         {
             return (rowsComplete*100)/order;
-        }
-        public void SaveSudoku()
-        {
-            String line = "";
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\josue\Desktop\WriteLines.txt"))
-            {
-                for (int i = 0; i < size; i++)
-                {
-                    for (int j = 0; j < size; j++)
-                    {
-                        line += matrix[i, j] + ",";
-                    }
-                    file.WriteLine(line);
-                    line = "";
-                }
-            }
-        }
-        public void LoadSodoku()
-        {
-            return;
         }
         public void FillNullMatrix()
         {
@@ -192,7 +161,6 @@ namespace KillerSudoku
                 vector.Add(i);
             }
         }
-
         public void GenerateBooleanMatrix()
         {
             booleanMatrix = new Boolean[size, size];
@@ -220,6 +188,159 @@ namespace KillerSudoku
         public int getResultPositionNumber(int x, int y)
         {
             return resultMatrix[x, y];
+        }
+        public void SaveSudoku(string path)
+        {
+            String line = "";
+            System.IO.StreamWriter file = new System.IO.StreamWriter(path);
+            using (file)
+            {
+                for (int i = 0; i < size; i++)
+                {
+                    for (int j = 0; j < size; j++)
+                    {
+                        line += matrix[j, i] + ",";
+                    }
+                    //string finalLine= line.Remove(line.LastIndexOf(','));                    
+                    file.WriteLine(line);
+                    line = "";
+                }
+                //file.Close();
+            }
+            file.Close();
+            SaveFigurates(path);
+        }
+        /* 
+           I "return"  in this second file:  
+           x"," being the [x,#] of each dot in the list of figurates.
+           y"," being the [#,i] of each dot in the list of figurates.        
+           shape"," being the number of the determinated shape
+           first","being just 0 or 1 to indicate if the number in the dot will be the first or not.
+         */
+        public void SaveFigurates(string path)
+        {
+            System.IO.StreamWriter Ffile = new System.IO.StreamWriter(path.Insert(path.IndexOf('.'), "_Figurates"));
+            String line = "";
+            using (Ffile)
+            {
+                List<Figure> list = getFiguresList();
+                for (int c = 0; c < list.Count; c++)
+                {
+                    Figure figure = list.ElementAt(c);
+                    int x;
+                    int y;
+                    int shape;
+                    int first;
+                    foreach (Dot item in figure.getDots())
+                    {
+                        x = item.getI();
+                        y = item.getJ();
+                        shape = item.getShape();
+                        if (item.verifyFirst() == true)
+                        {
+                            first = 0;
+                        }
+                        else
+                        {
+                            first = 1;
+                        }
+                        line += x + "," + y + "," + shape + "," + first + ",";
+                        Ffile.WriteLine(line);
+                        line = "";
+                    }
+                    line += figure.getT() + "," + figure.getColor() + "," + figure.getOperation() + "," + figure.getResult();
+                    Ffile.WriteLine(line);
+                    line = "";
+                }
+            }
+            Ffile.Close();
+            hideFile(path.Insert(path.IndexOf('.'), "_Figurates"));
+            //In this case, We write first before hidden de file            
+        }
+        public void setPositionNumber(int x, int y, int num)
+        {
+            matrix[x, y] = num;
+        }
+        public void hideFile(string path)
+        {
+            if ((File.GetAttributes(path) & FileAttributes.Hidden) != FileAttributes.Hidden)
+            {
+                //If the file is not hidden, then it chance to it.
+                File.SetAttributes(path, System.IO.FileAttributes.Hidden);
+            }
+        }
+        public void LoadSudoku(string path)//Al cargar el sudoku, reescribo lo que hay en la matriz, debo hacer lo mismo con la lista de figuras
+        {
+            matrix = new int[size, size];
+            StreamReader fileR = new StreamReader(path);
+            string[] array;// = new string[GetSize()*2];
+            string line = fileR.ReadToEnd(); //Todo el file
+            array = line.Split(','); //["1","3","2","5","4",...]
+            for (int x = 0; x < GetSize(); x++)
+            {
+                for (int y = 0; y < GetSize(); y++)
+                {
+                    int done;
+                    int i = 0;
+                    int? value = Int32.TryParse(array[y * x], out i) ? i : (int?)null;
+                    if (value.HasValue)
+                    {
+                        done = (int)value;
+                        setPositionNumber(x, y, done);
+                    }
+                }
+            }
+        }
+        public void LoadFigurates(string path)
+        {
+            figureList = new List<Figure>();
+            GenerateBooleanMatrix();
+            StreamReader fileR = new StreamReader(path);
+            List<Dot> dots = new List<Dot>();
+            while (!fileR.EndOfStream)
+            {
+                string textLine = fileR.ReadLine();//0,0,3,0,                
+                if (textLine.EndsWith(","))
+                {
+                    int x = Convert.ToInt32(textLine[0]);
+                    int y = Convert.ToInt32(textLine[2]);
+                    int shape = Convert.ToInt32(textLine[4]);
+                    bool first = false;
+                    if (textLine[6] == 0)
+                    {
+                        first = true;
+                    }
+                    Dot nDot = new Dot(x, y, shape, first);
+                    dots.Add(nDot);
+                }
+                else //1,Color [LawnGreen],*,8
+                {
+                    string[] array = textLine.Split(',');
+                    int type = Convert.ToInt32(array[0]);
+                    string[] secArray = array[1].Split(']'); //["Color [LawnGreen",  ","   , "*" , "8" ]
+                    string color = secArray[0].Substring(secArray[0].IndexOf('[') + 1);
+                    string operation = array[2];
+                    /*int type = Convert.ToInt32(textLine[0]);
+                    string second = textLine.Substring(textLine.IndexOf('[') + 1);
+                    string color = second.Remove(second.IndexOf(']'));             
+                    string operation = Convert.ToString(textLine[textLine.LastIndexOf(',') - 1]);*/
+                    if (operation == "*" || operation == "+")
+                    {
+                        int result = Convert.ToInt32(array[3]);
+                        /*
+                        string rst = textLine.Substring(textLine.LastIndexOf(',') + 1);
+                        int result = Convert.ToInt32(rst);*/
+                        Figure figure = new Figure(order,type, Color.FromName(color), operation, result, dots);
+                        figureList.Add(figure);
+                    }
+                    else
+                    {
+                        Figure figure = new Figure(type, Color.FromName(color), dots);
+                        figureList.Add(figure);
+                    }
+                    dots = new List<Dot>();
+                }
+            }
         }
     }
 }

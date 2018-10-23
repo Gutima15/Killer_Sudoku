@@ -438,7 +438,7 @@ namespace KillerSudoku
             dots.Add(new Dot(i2, j2, shape2));
             dots.Add(new Dot(i3, j3, shape3));
             dots.Add(new Dot(i4, j4, shape4));
-            vector.Add(new Figure(1, color, op, getResult(op, matrix[i1, j1], matrix[i2, j2], matrix[i3, j3], matrix[i4, j4]), dots));
+            vector.Add(new Figure(order,1, color, op, getResult(op, matrix[i1, j1], matrix[i2, j2], matrix[i3, j3], matrix[i4, j4]), dots));
             dots = new List<Dot>();
             FillNumbers();
         }

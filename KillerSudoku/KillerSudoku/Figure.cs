@@ -14,23 +14,29 @@ namespace KillerSudoku
         private string operation;
         private int result;
         private List<Dot> dotList;
-        private bool isJoker;
+        private List<int> submultiples;
+        private bool joker;
+        private int order;
 
-        public Figure(int type,Color color,string operation,int result,List<Dot> dotList)
+        public Figure(int order,int type,Color color,string operation,int result,List<Dot> dotList)
         {
+            this.order = order;
             this.type = type;
             this.color = color;
             this.operation = operation;
             this.dotList = dotList;
             this.result = result;
-            isJoker = false;
+            submultiples = new List<int>();
+            fillSubmultiplesList();
+            joker = false;
         }
         public Figure(int type, Color color, List<Dot> dotList)
         {
             this.type = type;
             this.color = color;
             this.dotList = dotList;
-            isJoker = true;
+            submultiples = null;
+            joker = true;
             operation = "";
             result = 0;
         }
@@ -49,6 +55,43 @@ namespace KillerSudoku
         public string getOperation()
         {
             return operation;
+        }
+        public bool isJoker()
+        {
+            return joker;
+        }
+        public void fillSubmultiplesList()
+        {
+            if (operation == "*")
+            {
+                double res = (double)result;
+                int res1 = 0;
+                double res2 = 0;
+                for (double u = 1; u < order + 1; u++)
+                {
+                    res1 = (int)(result / u);
+                    res2 = res / u;
+                    if ((res2 - res1) == 0)
+                    {
+                        submultiples.Add((int)u);
+                    }
+                }
+            }
+        }
+        public Boolean isSubmultiple(int n)
+        {
+            for(int i = 0; i < submultiples.Count; i++)
+            {
+                if(submultiples[i] == n)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public int getT()
+        {
+            return type;
         }
     }
 }

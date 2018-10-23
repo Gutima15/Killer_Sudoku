@@ -174,6 +174,8 @@
             this.comboBox1.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
+            "3",
+            "4",
             "5",
             "6",
             "7",
@@ -206,6 +208,7 @@
             this.btnSolve.TabIndex = 14;
             this.btnSolve.Text = "SOLVE";
             this.btnSolve.UseVisualStyleBackColor = false;
+            this.btnSolve.Click += new System.EventHandler(this.btnSolve_Click);
             // 
             // label6
             // 

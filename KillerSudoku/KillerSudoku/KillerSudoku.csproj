@@ -47,8 +47,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dot.cs" />
+    <Compile Include="EmptySudoku.cs" />
     <Compile Include="Figure.cs" />
     <Compile Include="FigureFactory.cs" />
+    <Compile Include="Node.cs" />
     <Compile Include="Sudoku.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
