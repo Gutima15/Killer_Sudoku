@@ -273,7 +273,7 @@ namespace KillerSudoku
             {
                 order = Int32.Parse(comboBox1.SelectedItem.ToString());
                 sudoku = new Sudoku(this, order);
-                sudoku2 = new EmptySudoku(this, order, sudoku.GetMatrix(), sudoku.getFiguresList());
+                sudoku2 = new EmptySudoku(this, order, sudoku.GetMatrix(), sudoku.getFiguresList(),sudoku);
                 drawSquareLines(x1, y1);
                 drawSquareLines(x2, y2);
                 drawColorBoxes();
@@ -321,10 +321,10 @@ namespace KillerSudoku
                     CleanPanel_2();
                     graphics2.FillRectangle(new SolidBrush(Color.Black), new Rectangle(1205, 220, 150, 120));
                     fileSize(fileName);
-                    sudoku = new Sudoku(this, order);
+                    sudoku = new Sudoku(this, order,true);
                     sudoku.LoadSudoku(fileName);
                     sudoku.LoadFigurates(fileName.Insert(fileName.IndexOf('.'), "_Figurates"));
-                    sudoku2 = new EmptySudoku(this, order, sudoku.GetMatrix(), sudoku.getFiguresList());
+                    sudoku2 = new EmptySudoku(this, order, sudoku.GetMatrix(), sudoku.getFiguresList(),sudoku);
                     drawSquareLines(x1, y1);
                     drawSquareLines(x2, y2);
                     drawColorBoxes();
@@ -410,10 +410,15 @@ namespace KillerSudoku
         }
         public void stopThreads()
         {
-            counter.Suspend();
-            solver.Suspend();
+            counter.Abort();
+            solver.Abort();
             seconds = 0;
             minutes = 0;
+        }
+
+        private void s_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -15,6 +15,7 @@ namespace KillerSudoku
     {
         private int[,] matrix;
         private int[,] resultMatrix;
+        private int[,] partialMatrix;
         private FigureFactory figureFactory;
         private bool[,] booleanMatrix;
         private List<Figure> figureList;
@@ -35,6 +36,7 @@ namespace KillerSudoku
             this.size = size;
             matrix = new int[size, size];
             resultMatrix = new int[size, size];
+            partialMatrix = new int[size, size];
             rowsComplete = 0;
             vector = new List<int>();
             vectorString = new List<string>();
@@ -46,6 +48,24 @@ namespace KillerSudoku
             figureList = figureFactory.getFigures();
             FillNullMatrix();
             FillRandomNumbers();
+        }
+        public Sudoku(s form, int size, bool forLoad)
+        {
+            myForm = form;
+            order = size;
+            this.size = size;
+            matrix = new int[size, size];
+            resultMatrix = new int[size, size];
+            partialMatrix = new int[size, size];
+            rowsComplete = 0;
+            vector = new List<int>();
+            vectorString = new List<string>();
+            repeat = false;
+            matrixComplete = false;
+        }
+        public void setPartialMatrix(int[,] matrix)
+        {
+            partialMatrix = matrix;
         }
         public void generateMatrix()
         {
@@ -210,13 +230,6 @@ namespace KillerSudoku
             file.Close();
             SaveFigurates(path);
         }
-        /* 
-           I "return"  in this second file:  
-           x"," being the [x,#] of each dot in the list of figurates.
-           y"," being the [#,i] of each dot in the list of figurates.        
-           shape"," being the number of the determinated shape
-           first","being just 0 or 1 to indicate if the number in the dot will be the first or not.
-         */
         public void SaveFigurates(string path)
         {
             System.IO.StreamWriter Ffile = new System.IO.StreamWriter(path.Insert(path.IndexOf('.'), "_Figurates"));

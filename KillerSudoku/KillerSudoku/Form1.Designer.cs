@@ -257,6 +257,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "s";
             this.Text = "Killer Sudoku";
+            this.Load += new System.EventHandler(this.s_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

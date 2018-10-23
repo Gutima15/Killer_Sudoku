@@ -10,6 +10,7 @@ namespace KillerSudoku
 {
     class EmptySudoku
     {
+        private Sudoku sudoku;
         private List<Figure> figureList;
         private int[,] fullMatrix;
         private bool[,] booleanMatrix;
@@ -20,8 +21,9 @@ namespace KillerSudoku
         List<int> vector;
         private s myForm;
         private Int64 comparations;
-        public EmptySudoku(s form, int order, int[,] newMatrix, List<Figure> figures)
+        public EmptySudoku(s form, int order, int[,] newMatrix, List<Figure> figures,Sudoku sudo)
         {
+            sudoku = sudo;
             myForm = form;
             fullMatrix = newMatrix;
             figureList = figures;
@@ -51,28 +53,21 @@ namespace KillerSudoku
         {
             fillVector();
             Random random = new Random();
+            int times = ((order*order)/3);
             int i = 0;
-            int times = 1;
-            if (order > 7) { times++; }
-            if (order > 9) { times++; }
-            if (order > 11) { times++; }
-            if (order > 13) { times++; }
-            if (order > 14) { times++; }
+            int j = 0;
             for (int k = 0; k < times; k++)
             {
-                for (int j = 0; j < order; j++)
+                i = vector[random.Next(vector.Count)];
+                j = vector[random.Next(vector.Count)];
+                if (booleanMatrix[i, j] == false)
                 {
-                    i = vector[random.Next(vector.Count)];
-                    if(booleanMatrix[i, j] == false)
-                    {
-                        partialMatrix[i, j] = fullMatrix[i, j];
-                        resultMatrix[i, j] = fullMatrix[i, j];
-                        booleanMatrix[i, j] = true;
-                        vector.Remove(i);
-                    }
+                    partialMatrix[i, j] = fullMatrix[i, j];
+                    resultMatrix[i, j] = fullMatrix[i, j];
+                    booleanMatrix[i, j] = true;
                 }
-                fillVector();
             }
+            sudoku.setPartialMatrix(partialMatrix);
         }
         public int getPositionNumber(int i,int j)
         {
