@@ -54,7 +54,9 @@ namespace KillerSudoku
             int i = 0;
             int times = 1;
             if (order > 7) { times++; }
+            if (order > 9) { times++; }
             if (order > 11) { times++; }
+            if (order > 13) { times++; }
             if (order > 14) { times++; }
             for (int k = 0; k < times; k++)
             {
@@ -235,7 +237,7 @@ namespace KillerSudoku
                     {
                         if (n1 + n2 + n3 + n4 > figure.getResult())
                         {
-                            return false;
+                            return false;      
                         }
                     }
                 }

@@ -25,7 +25,7 @@ namespace KillerSudoku
             i = x;
             j = y;
             this.shape = shape;
-            isFirst = true;
+            isFirst = first;
         }
         public int getI()
         {

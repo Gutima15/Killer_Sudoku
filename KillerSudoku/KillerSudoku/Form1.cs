@@ -105,7 +105,6 @@ namespace KillerSudoku
         private void drawColorBoxes()
         {
             List<Figure> figures = sudoku.getFiguresList();
-            //graphics.DrawString(figures.Count + "", new Font("Arial", 20), new SolidBrush(Color.Black), 600, 100);
             int boxSize = 600 / order;
             foreach (Figure figure in figures)
             {
@@ -242,7 +241,6 @@ namespace KillerSudoku
                     int number = sudoku2.getPositionNumber(i, j);
                     if (number != 0)
                     {
-
                         graphics.DrawString(number + "", new Font("Arial", (int)(boxSize / 2)), new SolidBrush(color), x2 + i * boxSize, j * boxSize + (int)(boxSize / 3));
                     }
 

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 
+
 namespace KillerSudoku
 {
     class FigureFactory
@@ -82,7 +83,7 @@ namespace KillerSudoku
                                         {
                                             if (boolMatrix[i + 1, j] == false && boolMatrix[i + 2, j] == false && boolMatrix[i + 3, j] == false)
                                             {
-                                                createFigure(i, j, i + 1, j, i + 2, j, i + 3, j, 1,6,6,2, Color.Blue,getOperation());
+                                                createFigure(i, j, i + 1, j, i + 2, j, i + 3, j, 1,6,6,2, Color.RoyalBlue, getOperation()); //Color.FromArgb(81, 118, 244)
                                                 done = true; // FINISH
                                             }
                                             else
@@ -100,7 +101,7 @@ namespace KillerSudoku
                                         {
                                             if (boolMatrix[i, j + 1] == false && boolMatrix[i, j + 2] == false && boolMatrix[i, j + 3] == false)
                                             {
-                                                createFigure(i, j, i, j + 1, i, j + 2, i, j + 3, 3, 5, 5, 4, Color.Blue, getOperation());
+                                                createFigure(i, j, i, j + 1, i, j + 2, i, j + 3, 3, 5, 5, 4, Color.RoyalBlue, getOperation()); //Color.FromArgb(81, 118, 244)
                                                 done = true; // FINISH
                                             }
                                             else
@@ -154,7 +155,7 @@ namespace KillerSudoku
                                         {
                                             if (boolMatrix[i, j + 1] == false && boolMatrix[i + 1, j + 1] == false && boolMatrix[i + 1, j + 2] == false)
                                             {
-                                                createFigure(i, j, i, j + 1, i + 1, j + 1, i + 1, j + 2, 3, 13, 12, 4, Color.Red, getOperation());
+                                                createFigure(i, j, i, j + 1, i + 1, j + 1, i + 1, j + 2, 3, 13, 12, 4, Color.OrangeRed, getOperation()); //Color.FromArgb(255, 74, 74)
                                                 done = true; // FINISH
                                             }
                                             else
@@ -172,7 +173,7 @@ namespace KillerSudoku
                                         {
                                             if (boolMatrix[i + 1, j] == false && boolMatrix[i + 1, j - 1] == false && boolMatrix[i + 2, j - 1] == false)
                                             {
-                                                createFigure(i, j, i + 1, j-1, i + 1, j, i + 2, j - 1, 1, 11, 14, 2, Color.Red, getOperation());
+                                                createFigure(i, j, i + 1, j-1, i + 1, j, i + 2, j - 1, 1, 11, 14, 2, Color.OrangeRed, getOperation()); 
                                                 done = true; // FINISH
                                             }
                                             else

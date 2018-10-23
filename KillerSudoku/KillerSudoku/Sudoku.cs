@@ -276,17 +276,20 @@ namespace KillerSudoku
             string[] array;// = new string[GetSize()*2];
             string line = fileR.ReadToEnd(); //Todo el file
             array = line.Split(','); //["1","3","2","5","4",...]
-            for (int x = 0; x < GetSize(); x++)
+            int x = 0;
+            int c = 0;
+            for(int k = 0; k < array.Length; k++)
             {
-                for (int y = 0; y < GetSize(); y++)
+                int i = 0;
+                int? value = Int32.TryParse(array[k], out i) ? i : (int?)null;
+                if (value.HasValue)
                 {
-                    int done;
-                    int i = 0;
-                    int? value = Int32.TryParse(array[y * x], out i) ? i : (int?)null;
-                    if (value.HasValue)
+                    setPositionNumber(c, x, (int)value);
+                    c++;
+                    if (c == order)
                     {
-                        done = (int)value;
-                        setPositionNumber(x, y, done);
+                        c = 0;
+                        x++;
                     }
                 }
             }
@@ -299,14 +302,15 @@ namespace KillerSudoku
             List<Dot> dots = new List<Dot>();
             while (!fileR.EndOfStream)
             {
-                string textLine = fileR.ReadLine();//0,0,3,0,                
+                string textLine = fileR.ReadLine();//0,0,3,0,   
+                string[] array2 = textLine.Split(',');
                 if (textLine.EndsWith(","))
                 {
-                    int x = Convert.ToInt32(textLine[0]);
-                    int y = Convert.ToInt32(textLine[2]);
-                    int shape = Convert.ToInt32(textLine[4]);
+                    int x = Convert.ToInt32(array2[0]);
+                    int y = Convert.ToInt32(array2[1]);
+                    int shape = Convert.ToInt32(array2[2]);
                     bool first = false;
-                    if (textLine[6] == 0)
+                    if (Convert.ToInt32(array2[3]) == 0)
                     {
                         first = true;
                     }
@@ -320,22 +324,15 @@ namespace KillerSudoku
                     string[] secArray = array[1].Split(']'); //["Color [LawnGreen",  ","   , "*" , "8" ]
                     string color = secArray[0].Substring(secArray[0].IndexOf('[') + 1);
                     string operation = array[2];
-                    /*int type = Convert.ToInt32(textLine[0]);
-                    string second = textLine.Substring(textLine.IndexOf('[') + 1);
-                    string color = second.Remove(second.IndexOf(']'));             
-                    string operation = Convert.ToString(textLine[textLine.LastIndexOf(',') - 1]);*/
-                    if (operation == "*" || operation == "+")
+                    int result = Convert.ToInt32(array[3]);
+                    if (result != 0)
                     {
-                        int result = Convert.ToInt32(array[3]);
-                        /*
-                        string rst = textLine.Substring(textLine.LastIndexOf(',') + 1);
-                        int result = Convert.ToInt32(rst);*/
                         Figure figure = new Figure(order,type, Color.FromName(color), operation, result, dots);
                         figureList.Add(figure);
                     }
                     else
                     {
-                        Figure figure = new Figure(type, Color.FromName(color), dots);
+                        Figure figure = new Figure(type, Color.FromName(color), dots); //Joker builder
                         figureList.Add(figure);
                     }
                     dots = new List<Dot>();
