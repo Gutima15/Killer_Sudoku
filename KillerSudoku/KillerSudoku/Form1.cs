@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -25,16 +26,23 @@ namespace KillerSudoku
         private Graphics graphics3;
         private Pen normalPen;
         private SolidBrush backBrush;
-        private Thread solver;
+
         private Thread counter;
+        private Thread[] array;
+        private int threads;
         private int minutes;
         private int seconds;
+
         private bool solving;
+        private bool generated;
+        private bool generating;
+        private bool solved;
 
         public s()
         {
             InitializeComponent();
             Screen screen = Screen.PrimaryScreen;
+            array = new Thread[1];
             x1 = 0;
             x2 = 600;
             y1 = 0;
@@ -47,7 +55,10 @@ namespace KillerSudoku
             backBrush = new SolidBrush(Color.White);
             minutes = 0;
             seconds = 0;
+            threads = 1;
             solving = false;
+            generated = false;
+            solved = false;
         }
 
         private void CleanPanel_1()
@@ -66,24 +77,26 @@ namespace KillerSudoku
         }
         public void updateGeneratingLabel(String word, String percentage)
         {
-            graphics.DrawString(word, new Font("Arial", 16), new SolidBrush(Color.Yellow), 1210, 230);
-            graphics.DrawString(percentage, new Font("Arial", 16), new SolidBrush(Color.Yellow), 1250, 260);
+            Graphics graphs = CreateGraphics();
+            graphs.DrawString(word, new Font("Arial", 16), new SolidBrush(Color.Yellow), 1210, 230);
+            graphs.DrawString(percentage, new Font("Arial", 16), new SolidBrush(Color.Yellow), 1250, 260);
         }
-        
         public void updateTime(int minutes, int seconds)
         {
+            Graphics graphs = CreateGraphics();
             CleanRightPanel();
             String mins = minutes + "";
             String secs = seconds + "";
             if (minutes < 10) { mins = "0" + mins; }
             if (seconds < 10) { secs = "0" + secs; }
-            graphics2.DrawString("Solving...", new Font("Arial", 16), new SolidBrush(Color.Yellow), 1210, 230);
-            graphics2.DrawString("Time: " + mins + ":" + secs, new Font("Arial", 16), new SolidBrush(Color.Yellow), 1210, 260);
+            graphs.DrawString("Solving...", new Font("Arial", 16), new SolidBrush(Color.Yellow), 1210, 230);
+            graphs.DrawString("Time: " + mins + ":" + secs, new Font("Arial", 16), new SolidBrush(Color.Yellow), 1210, 260);
         }
         public void updateComparations(Int64 n)
         {
-            graphics3.FillRectangle(new SolidBrush(Color.Black), new Rectangle(1205, 310, 150, 30));
-            graphics3.DrawString(n+"", new Font("Arial", 16), new SolidBrush(Color.Yellow), 1210, 320);
+            Graphics graphs = CreateGraphics();
+            graphs.FillRectangle(new SolidBrush(Color.Black), new Rectangle(1205, 310, 150, 30));
+            graphs.DrawString(n+"", new Font("Arial", 16), new SolidBrush(Color.Yellow), 1210, 320);
         }
         private void drawSquareLines(int startX, int startY)
         {
@@ -212,7 +225,6 @@ namespace KillerSudoku
                 }
             }
         }
-
         private void drawOperations(Color color)
         {
             List<Figure> figures = sudoku.getFiguresList();
@@ -249,11 +261,12 @@ namespace KillerSudoku
         }
         public void updateNumber(int number, int i, int j)
         {
+            Graphics graphs = CreateGraphics();
             int boxSize = 600 / order;
-            graphics.FillRectangle(new SolidBrush(Color.White), x2 + 3 + i * boxSize, 3 + j * boxSize, boxSize - 3, boxSize - 3);
+            graphs.FillRectangle(new SolidBrush(Color.White), x2 + 3 + i * boxSize, 3 + j * boxSize, boxSize - 3, boxSize - 3);
             if (number != 0)
             {
-                graphics.DrawString(number + "", new Font("Arial", (int)(boxSize / 2)), new SolidBrush(Color.Black), x2 + i * boxSize, j * boxSize + (int)(boxSize / 3));
+                graphs.DrawString(number + "", new Font("Arial", (int)(boxSize / 2)), new SolidBrush(Color.Black), x2 + i * boxSize, j * boxSize + (int)(boxSize / 3));
             }
 
         }
@@ -264,10 +277,12 @@ namespace KillerSudoku
                 solving = false;
                 stopThreads();
             }
+            generated = false;
             minutes = 0;
             seconds = 0;
             CleanPanel_1();
             CleanPanel_2();
+            resetArray();
             graphics2.FillRectangle(new SolidBrush(Color.Black), new Rectangle(1205, 220, 150, 120));
             if (comboBox1.SelectedIndex > -1)
             {
@@ -282,14 +297,12 @@ namespace KillerSudoku
                 drawMatrixNumbers();
                 drawOperations(Color.Black);
                 drawResultInitialNumbers(Color.Blue);
+                generated = true;
             }
             else
             {
-                MessageBox.Show("You must select a size",
-                "Warning",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Exclamation,
-                MessageBoxDefaultButton.Button1);
+                generated = false;
+                MessageBox.Show("You must select a size","Warning",MessageBoxButtons.OK,MessageBoxIcon.Exclamation,MessageBoxDefaultButton.Button1);
             }
         }
         public void showSudokuSolvedMessage()
@@ -310,7 +323,8 @@ namespace KillerSudoku
             {   //then check if the name the user enters is not empty
                 string fileName = openFileDialog1.FileName;
                 if (fileName != "")
-                {   //Also, if the file exists to prevent the not existance of the file.                    
+                {
+                    generated = false;
                     bool existingFile = System.IO.File.Exists(fileName);
                     if (existingFile == false)
                     {
@@ -319,12 +333,15 @@ namespace KillerSudoku
                     }
                     CleanPanel_1();
                     CleanPanel_2();
+                    resetArray();
                     graphics2.FillRectangle(new SolidBrush(Color.Black), new Rectangle(1205, 220, 150, 120));
                     fileSize(fileName);
                     sudoku = new Sudoku(this, order,true);
                     sudoku.LoadSudoku(fileName);
                     sudoku.LoadFigurates(fileName.Insert(fileName.IndexOf('.'), "_Figurates"));
-                    sudoku2 = new EmptySudoku(this, order, sudoku.GetMatrix(), sudoku.getFiguresList(),sudoku);
+                    sudoku.LoadPartial(fileName.Insert(fileName.IndexOf('.'), "_PartialMatrix"));
+                    sudoku2 = new EmptySudoku(this, order, sudoku.GetMatrix(), sudoku.getFiguresList(),sudoku,true);
+                    sudoku2.setPartialMatrix(sudoku.getPartialMatrix());
                     drawSquareLines(x1, y1);
                     drawSquareLines(x2, y2);
                     drawColorBoxes();
@@ -333,6 +350,7 @@ namespace KillerSudoku
                     drawMatrixNumbers();
                     drawOperations(Color.Black);
                     drawResultInitialNumbers(Color.Blue);
+                    generated = true;
                 }
             }
             else
@@ -343,8 +361,16 @@ namespace KillerSudoku
         }
         private void fileSize(string path)
         {
-            System.IO.StreamReader fileR = new System.IO.StreamReader(path);
-            order = fileR.ReadLine().Length / 2;
+            //System.IO.StreamReader fileR = new System.IO.StreamReader(path);
+            StreamReader fileR = new StreamReader(path);
+            int c = 0;
+            while (!fileR.EndOfStream)
+            {
+                string textLine = fileR.ReadLine();//0,0,3,0,   
+                c++;
+            }
+            order = c;
+                //order = fileR.ReadLine().Length / 2;
         }
         private void btnSave_Click(object sender, EventArgs e)
         {
@@ -383,27 +409,72 @@ namespace KillerSudoku
 
         private void btnSolve_Click(object sender, EventArgs e)
         {
-            graphics3.FillRectangle(new SolidBrush(Color.Black), new Rectangle(1205, 280, 150, 30));
-            graphics3.DrawString("Comparations", new Font("Arial", 16), new SolidBrush(Color.Yellow), 1210, 290);
-            solver = new Thread(sudoku2.solveSudoku);
-            counter = new Thread(timer);
-            sudoku2.setNoCompleted();
-            minutes = 0;
-            seconds = 0;
-            solving = true;
-            solver.Start();
-            counter.Start();
+            if (isNumber(textBoxThreads.Text) == true)
+            {
+                solving = true;
+                generated = false;
+                graphics3.FillRectangle(new SolidBrush(Color.Black), new Rectangle(1205, 280, 150, 30));
+                graphics3.DrawString("Comparations", new Font("Arial", 16), new SolidBrush(Color.Yellow), 1210, 290);
+                sudoku2.setNoCompleted();
+                counter = new Thread(timer);
+                counter.Start();
+                minutes = 0;
+                seconds = 0;
+                int n = Int32.Parse(textBoxThreads.Text);
+                startThreads(n);
+            }
+            else
+            {
+                MessageBox.Show("You must select a valid number of threads", "System Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }   
+        }
+        public void resetArray()
+        {
+            if (array != null)
+            { 
+                for (int k = 0; k < array.Length; k++)
+                {
+                    if (array[k] != null)
+                    {
+                        array[k].Abort();
+                        array[k] = null;
+                    }
+                }
+            }
+        }
+        public void setSolved()
+        {
+            solved = true;
+            solving = false;
+        }
+        private bool isNumber(String n)
+        {
+            if (n != null)
+            {
+                int r;
+                if(Int32.TryParse(n,out r))
+                {
+                    if (r>0)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
         private void timer()
         {
             while (true)
             {
-                updateTime(minutes, seconds);
-                seconds++;
-                if (seconds == 60)
+                if (solving == true)
                 {
-                    seconds = 0;
-                    minutes++;
+                    updateTime(minutes, seconds);
+                    seconds++;
+                    if (seconds == 60)
+                    {
+                        seconds = 0;
+                        minutes++;
+                    }
                 }
                 Thread.Sleep(1000);
             }
@@ -411,14 +482,42 @@ namespace KillerSudoku
         public void stopThreads()
         {
             counter.Abort();
-            solver.Abort();
+            for (int i = 0; i < array.Length; i++)
+            {
+                array[i].Abort();
+            }
             seconds = 0;
             minutes = 0;
         }
-
+        private void startThreads(int n)
+        {
+            array = new Thread[n];
+            threads = n;
+            for (int i = 0; i < n; i++)
+            {
+                array[i] = new Thread(sudoku2.solveSudoku);
+                array[i].Start();
+            }
+        }
+        public void updateThreadsAmount()
+        {
+            Graphics graphs = CreateGraphics();
+            graphs.FillRectangle(new SolidBrush(Color.Black), new Rectangle(1205, 600, 150, 50));
+            graphs.DrawString(threads+"", new Font("Arial", 24), new SolidBrush(Color.Yellow), 1220, 610);
+        }
         private void s_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void textBoxThreads_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnAddThread_Click(object sender, EventArgs e)
+        {
+            updateThreadsAmount();
         }
     }
 }

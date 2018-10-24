@@ -26,8 +26,6 @@ namespace KillerSudoku
         private List<string> vectorString;
         private bool repeat;
         private bool matrixComplete;
-        private StreamReader objReader;
-        private StreamReader objReader2;
         private s myForm;
         public Sudoku(s form, int size)
         {
@@ -96,6 +94,10 @@ namespace KillerSudoku
         {
             return (rowsComplete*100)/order;
         }
+        public int[,] getPartialMatrix()
+        {
+            return partialMatrix;
+        }
         public void FillNullMatrix()
         {
             for (int i = 0; i < size; i++)
@@ -103,10 +105,29 @@ namespace KillerSudoku
                 for (int j = 0; j < size; j++)
                 {
                     resultMatrix[i, j] = 0;
+                    partialMatrix[i, j] = 0;
                 }
             }
         }
-        
+        public void SavePartial(string path)
+        {
+            String line = "";
+            System.IO.StreamWriter file = new System.IO.StreamWriter(path.Insert(path.IndexOf('.'), "_PartialMatrix"));
+            using (file)
+            {
+                for (int i = 0; i < size; i++)
+                {
+                    for (int j = 0; j < size; j++)
+                    {
+                        line += partialMatrix[j, i] + ",";
+                    }
+                    file.WriteLine(line);
+                    line = "";
+                }
+            }
+            file.Close();
+            hideFile(path.Insert(path.IndexOf('.'), "_PartialMatrix"));
+        }
         public void FillRandomNumbers()
         {
             Random rnd = new Random();
@@ -229,6 +250,7 @@ namespace KillerSudoku
             }
             file.Close();
             SaveFigurates(path);
+            SavePartial(path);
         }
         public void SaveFigurates(string path)
         {
@@ -270,9 +292,16 @@ namespace KillerSudoku
             hideFile(path.Insert(path.IndexOf('.'), "_Figurates"));
             //In this case, We write first before hidden de file            
         }
-        public void setPositionNumber(int x, int y, int num)
+        public void setPositionNumber(int x, int y, int num, int type)
         {
-            matrix[x, y] = num;
+            if (type == 0)
+            {
+                matrix[x, y] = num;
+            }
+            else
+            {
+                partialMatrix[x, y] = num;
+            }
         }
         public void hideFile(string path)
         {
@@ -297,7 +326,32 @@ namespace KillerSudoku
                 int? value = Int32.TryParse(array[k], out i) ? i : (int?)null;
                 if (value.HasValue)
                 {
-                    setPositionNumber(c, x, (int)value);
+                    setPositionNumber(c, x, (int)value,0);
+                    c++;
+                    if (c == order)
+                    {
+                        c = 0;
+                        x++;
+                    }
+                }
+            }
+        }
+        public void LoadPartial(string path)
+        {
+            partialMatrix = new int[size, size];
+            StreamReader fileR = new StreamReader(path);
+            string[] array;// = new string[GetSize()*2];
+            string line = fileR.ReadToEnd(); //Todo el file
+            array = line.Split(','); //["1","3","2","5","4",...]
+            int x = 0;
+            int c = 0;
+            for (int k = 0; k < array.Length; k++)
+            {
+                int i = 0;
+                int? value = Int32.TryParse(array[k], out i) ? i : (int?)null;
+                if (value.HasValue)
+                {
+                    setPositionNumber(c, x, (int)value, 1);
                     c++;
                     if (c == order)
                     {

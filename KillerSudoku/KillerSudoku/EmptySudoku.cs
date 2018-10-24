@@ -16,6 +16,7 @@ namespace KillerSudoku
         private bool[,] booleanMatrix;
         private int[,] partialMatrix;
         private int[,] resultMatrix;
+        private bool[,,] busyCube;
         private bool isCompleted;
         private int order;
         List<int> vector;
@@ -32,8 +33,27 @@ namespace KillerSudoku
             booleanMatrix = new bool[order, order];
             partialMatrix = new int[order, order];
             resultMatrix = new int[order, order];
+            busyCube = new bool[order, order, order];
+            fillCube();
             fillMatrices();
             fillPartialMatrix();
+            isCompleted = false;
+            comparations = 0;
+        }
+        public EmptySudoku(s form, int order, int[,] newMatrix, List<Figure> figures, Sudoku sudo,Boolean forLoad)
+        {
+            sudoku = sudo;
+            myForm = form;
+            fullMatrix = newMatrix;
+            figureList = figures;
+            this.order = order;
+            vector = new List<int>();
+            booleanMatrix = new bool[order, order];
+            partialMatrix = new int[order, order];
+            resultMatrix = new int[order, order];
+            busyCube = new bool[order, order, order];
+            fillCube();
+            fillMatrices();
             isCompleted = false;
             comparations = 0;
         }
@@ -46,6 +66,20 @@ namespace KillerSudoku
                     booleanMatrix[i, j] = false;
                     partialMatrix[i, j] = 0;
                     resultMatrix[i, j] = 0;
+                }
+            }
+        }
+        
+        private void fillCube()
+        {
+            for(int i = 0;i < order; i++)
+            {
+                for (int j = 0; j < order; j++)
+                {
+                    for (int k = 0; k < order; k++)
+                    {
+                        busyCube[i, j, k] = false;
+                    }
                 }
             }
         }
@@ -68,6 +102,25 @@ namespace KillerSudoku
                 }
             }
             sudoku.setPartialMatrix(partialMatrix);
+        }
+        public void setPartialMatrix(int[,] matrix)
+        {
+            for(int i = 0; i < order; i++)
+            {
+                for (int j = 0; j < order; j++)
+                {
+                    if(matrix[i,j] != 0)
+                    {
+                        partialMatrix[i, j] = matrix[i, j];
+                        resultMatrix[i, j] = matrix[i, j];
+                        booleanMatrix[i, j] = true;
+                    }
+                }
+            }
+        }
+        public int[,] getPartialMatrix()
+        {
+            return partialMatrix;
         }
         public int getPositionNumber(int i,int j)
         {
@@ -100,11 +153,13 @@ namespace KillerSudoku
         {
             int i = 0;
             int j = 0;
+            int n = 0;
             List<int> options;
             if (isFull() == true)
             {
                 isCompleted = true;
                 myForm.stopThreads();
+                myForm.setSolved();
                 comparations = 0;
                 return;
             }
@@ -114,7 +169,7 @@ namespace KillerSudoku
                 {
                     for (int y = 0; y < order; y++)
                     {
-                        if(partialMatrix[x,y] == 0)
+                        if(resultMatrix[x,y] == 0)
                         {
                             i = x;
                             j = y;
@@ -125,9 +180,10 @@ namespace KillerSudoku
                 options = getOptions(i, j);
                 for (int k = 0; k < options.Count; k++)
                 {
+                    n = options[k];
                     if (!isCompleted)
                     {
-                        partialMatrix[i, j] = options[k];
+                        busyCube[i, j, n-1] = true;
                         resultMatrix[i, j] = options[k];
                         myForm.updateNumber(options[k], i, j);
                         comparations++;
@@ -137,7 +193,7 @@ namespace KillerSudoku
                 }
                 if (!isCompleted)
                 {
-                    partialMatrix[i, j] = 0;
+                    resultMatrix[i, j] = 0;
                     myForm.updateNumber(0, i, j);
                 }
             }
@@ -162,14 +218,14 @@ namespace KillerSudoku
         {
             for(int k = 0; k < order; k++)
             {
-                if(partialMatrix[k,j] == n)
+                if(resultMatrix[k,j] == n)
                 {
                     return false;
                 }
             }
             for (int m = 0; m < order; m++)
             {
-                if (partialMatrix[i, m] == n)
+                if (resultMatrix[i, m] == n)
                 {
                     return false;
                 }
@@ -182,10 +238,10 @@ namespace KillerSudoku
             List<Dot> dots = figure.getDots();
             if(figure.isJoker() == false)
             {
-                int n1 = partialMatrix[dots[0].getI(), dots[0].getJ()];
-                int n2 = partialMatrix[dots[1].getI(), dots[1].getJ()];
-                int n3 = partialMatrix[dots[2].getI(), dots[2].getJ()];
-                int n4 = partialMatrix[dots[3].getI(), dots[3].getJ()];
+                int n1 = resultMatrix[dots[0].getI(), dots[0].getJ()];
+                int n2 = resultMatrix[dots[1].getI(), dots[1].getJ()];
+                int n3 = resultMatrix[dots[2].getI(), dots[2].getJ()];
+                int n4 = resultMatrix[dots[3].getI(), dots[3].getJ()];
                 if (dots[0].getI() == i && dots[0].getJ() == j){ n1 = n;}
                 if (dots[1].getI() == i && dots[1].getJ() == j) { n2 = n; }
                 if (dots[2].getI() == i && dots[2].getJ() == j) { n3 = n; }
@@ -246,7 +302,7 @@ namespace KillerSudoku
             {
                 for (int j = 0; j < order; j++)
                 {
-                    if(partialMatrix[i,j] == 0)
+                    if(resultMatrix[i,j] == 0)
                     {
                         return false;
                     }
